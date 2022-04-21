@@ -156,19 +156,21 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 				// but the retry shouldn't block other resource process
 				r.Log.Error(err, "fail to apply chaos")
 				applyFailedEvent := newRecordEvent(v1alpha1.Failed, v1alpha1.Injection, err.Error())
-				records[index].Events = append(records[index].Events, *applyFailedEvent)
+				records[index].Events = append(records[index].Events, applyFailedEvent)
 				r.Recorder.Event(obj, recorder.Failed{
 					Activity: "apply chaos",
 					Err:      err.Error(),
 				})
 				needRetry = true
+				// if the impl.Apply() failed, we need to update the status to update the records[index].Events
+				shouldUpdate = true
 				continue
 			}
 
 			if record.Phase == v1alpha1.Injected {
 				records[index].InjectedCount++
 				applySucceedEvent := newRecordEvent(v1alpha1.Succeed, v1alpha1.Injection, "")
-				records[index].Events = append(records[index].Events, *applySucceedEvent)
+				records[index].Events = append(records[index].Events, applySucceedEvent)
 				r.Recorder.Event(obj, recorder.Applied{
 					Id: records[index].Id,
 				})
@@ -184,19 +186,21 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 				// but the retry shouldn't block other resource process
 				r.Log.Error(err, "fail to recover chaos")
 				recoverFailedEvent := newRecordEvent(v1alpha1.Failed, v1alpha1.Recovery, err.Error())
-				records[index].Events = append(records[index].Events, *recoverFailedEvent)
+				records[index].Events = append(records[index].Events, recoverFailedEvent)
 				r.Recorder.Event(obj, recorder.Failed{
 					Activity: "recover chaos",
 					Err:      err.Error(),
 				})
 				needRetry = true
+				// if the impl.Recover() failed, we need to update the status to update the records[index].Events
+				shouldUpdate = true
 				continue
 			}
 
 			if record.Phase == v1alpha1.NotInjected {
 				records[index].RecoveredCount++
 				recoverSucceedEvent := newRecordEvent(v1alpha1.Succeed, v1alpha1.Recovery, "")
-				records[index].Events = append(records[index].Events, *recoverSucceedEvent)
+				records[index].Events = append(records[index].Events, recoverSucceedEvent)
 				r.Recorder.Event(obj, recorder.Recovered{
 					Id: records[index].Id,
 				})

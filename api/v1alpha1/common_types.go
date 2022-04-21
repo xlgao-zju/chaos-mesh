@@ -81,7 +81,7 @@ type Record struct {
 	// RecoveredCount is a counter to record the sum of successful recoveries
 	RecoveredCount int `json:"recoveredCount"`
 	// Events are the essential details about the injections and recoveries
-	Events []RecordEvent `json:"events"`
+	Events []*RecordEvent `json:"events,omitempty"`
 }
 
 type Phase string

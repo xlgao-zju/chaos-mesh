@@ -251,7 +251,6 @@ spec:
                         selectorKey:
                           type: string
                       required:
-                      - events
                       - id
                       - injectedCount
                       - phase

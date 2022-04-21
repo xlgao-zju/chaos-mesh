@@ -139,7 +139,6 @@ spec:
                         selectorKey:
                           type: string
                       required:
-                      - events
                       - id
                       - injectedCount
                       - phase
@@ -311,7 +310,6 @@ spec:
                         selectorKey:
                           type: string
                       required:
-                      - events
                       - id
                       - injectedCount
                       - phase
@@ -592,7 +590,6 @@ spec:
                         selectorKey:
                           type: string
                       required:
-                      - events
                       - id
                       - injectedCount
                       - phase
@@ -873,7 +870,6 @@ spec:
                         selectorKey:
                           type: string
                       required:
-                      - events
                       - id
                       - injectedCount
                       - phase
@@ -1047,7 +1043,6 @@ spec:
                         selectorKey:
                           type: string
                       required:
-                      - events
                       - id
                       - injectedCount
                       - phase
@@ -1404,7 +1399,6 @@ spec:
                         selectorKey:
                           type: string
                       required:
-                      - events
                       - id
                       - injectedCount
                       - phase
@@ -1801,7 +1795,6 @@ spec:
                         selectorKey:
                           type: string
                       required:
-                      - events
                       - id
                       - injectedCount
                       - phase
@@ -2106,7 +2099,6 @@ spec:
                         selectorKey:
                           type: string
                       required:
-                      - events
                       - id
                       - injectedCount
                       - phase
@@ -2419,7 +2411,6 @@ spec:
                         selectorKey:
                           type: string
                       required:
-                      - events
                       - id
                       - injectedCount
                       - phase
@@ -2917,7 +2908,6 @@ spec:
                         selectorKey:
                           type: string
                       required:
-                      - events
                       - id
                       - injectedCount
                       - phase
@@ -3602,7 +3592,6 @@ spec:
                         selectorKey:
                           type: string
                       required:
-                      - events
                       - id
                       - injectedCount
                       - phase
@@ -3928,7 +3917,6 @@ spec:
                         selectorKey:
                           type: string
                       required:
-                      - events
                       - id
                       - injectedCount
                       - phase
@@ -17079,7 +17067,6 @@ spec:
                         selectorKey:
                           type: string
                       required:
-                      - events
                       - id
                       - injectedCount
                       - phase
@@ -17367,7 +17354,6 @@ spec:
                         selectorKey:
                           type: string
                       required:
-                      - events
                       - id
                       - injectedCount
                       - phase

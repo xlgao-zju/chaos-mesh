@@ -3461,9 +3461,13 @@ func (in *Record) DeepCopyInto(out *Record) {
 	*out = *in
 	if in.Events != nil {
 		in, out := &in.Events, &out.Events
-		*out = make([]RecordEvent, len(*in))
+		*out = make([]*RecordEvent, len(*in))
 		for i := range *in {
-			(*in)[i].DeepCopyInto(&(*out)[i])
+			if (*in)[i] != nil {
+				in, out := &(*in)[i], &(*out)[i]
+				*out = new(RecordEvent)
+				(*in).DeepCopyInto(*out)
+			}
 		}
 	}
 }
