@@ -19,6 +19,7 @@ import (
 	"time"
 
 	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 )
@@ -75,6 +76,12 @@ type Record struct {
 	Id          string `json:"id"`
 	SelectorKey string `json:"selectorKey"`
 	Phase       Phase  `json:"phase"`
+	// InjectedCount is a counter to record the sum of successful injections
+	InjectedCount int `json:"injectedCount"`
+	// RecoveredCount is a counter to record the sum of successful recoveries
+	RecoveredCount int `json:"recoveredCount"`
+	// Events are the essential details about the injections and recoveries
+	Events []RecordEvent `json:"events"`
 }
 
 type Phase string
@@ -84,6 +91,33 @@ const (
 	NotInjected Phase = "Not Injected"
 	// Injected means the target is injected. It's safe to recover it.
 	Injected Phase = "Injected"
+)
+
+type RecordEvent struct {
+	Type      RecordEventType  `json:"type"`
+	Stage     RecordEventStage `json:"stage"`
+	Message   string           `json:"message,omitempty"`
+	Timestamp *metav1.Time     `json:"timestamp"`
+}
+
+type RecordEventType string
+
+const (
+	// Succeed means the stage of this event is successful
+	Succeed RecordEventType = "Succeed"
+	// Failed means the stage of this event is failed
+	Failed RecordEventType = "Failed"
+)
+
+type RecordEventStage string
+
+const (
+	// Injection means this event is recorded, when we inject the chaos
+	// typically, when we call impl.Apply()
+	Injection RecordEventStage = "Injection"
+	// Recovery means this event is recorded, when we recover the chaos
+	// typically, when we call impl.Recover()
+	Recovery RecordEventStage = "Recovery"
 )
 
 var log = ctrl.Log.WithName("api")

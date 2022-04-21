@@ -250,15 +250,46 @@ spec:
                     description: Records are used to track the running status
                     items:
                       properties:
+                        events:
+                          description: Events are the essential details about the
+                            injections and recoveries
+                          items:
+                            properties:
+                              message:
+                                type: string
+                              stage:
+                                type: string
+                              timestamp:
+                                format: date-time
+                                type: string
+                              type:
+                                type: string
+                            required:
+                            - stage
+                            - timestamp
+                            - type
+                            type: object
+                          type: array
                         id:
                           type: string
+                        injectedCount:
+                          description: InjectedCount is a counter to record the sum
+                            of successful injections
+                          type: integer
                         phase:
                           type: string
+                        recoveredCount:
+                          description: RecoveredCount is a counter to record the sum
+                            of successful recoveries
+                          type: integer
                         selectorKey:
                           type: string
                       required:
+                      - events
                       - id
+                      - injectedCount
                       - phase
+                      - recoveredCount
                       - selectorKey
                       type: object
                     type: array
