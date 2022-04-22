@@ -81,7 +81,7 @@ type Record struct {
 	// RecoveredCount is a counter to record the sum of successful recoveries
 	RecoveredCount int `json:"recoveredCount"`
 	// Events are the essential details about the injections and recoveries
-	Events []*RecordEvent `json:"events,omitempty"`
+	Events []RecordEvent `json:"events,omitempty"`
 }
 
 type Phase string
@@ -94,10 +94,14 @@ const (
 )
 
 type RecordEvent struct {
-	Type      RecordEventType  `json:"type"`
-	Stage     RecordEventStage `json:"stage"`
-	Message   string           `json:"message,omitempty"`
-	Timestamp *metav1.Time     `json:"timestamp"`
+	// Type means the stage of this event
+	Type RecordEventType `json:"type"`
+	// Operation represents the operation we are doing, when we crate this event
+	Operation RecordEventOpration `json:"operation"`
+	// Message is the detail message, e.g. the reason why we failed to inject the chaos
+	Message string `json:"message,omitempty"`
+	// Timestamp is time when we create this event
+	Timestamp *metav1.Time `json:"timestamp"`
 }
 
 type RecordEventType string
@@ -109,15 +113,15 @@ const (
 	Failed RecordEventType = "Failed"
 )
 
-type RecordEventStage string
+type RecordEventOpration string
 
 const (
-	// Injection means this event is recorded, when we inject the chaos
+	// Apply means this event is recorded, when we inject the chaos
 	// typically, when we call impl.Apply()
-	Injection RecordEventStage = "Injection"
-	// Recovery means this event is recorded, when we recover the chaos
+	Apply RecordEventOpration = "Apply"
+	// Recover means this event is recorded, when we recover the chaos
 	// typically, when we call impl.Recover()
-	Recovery RecordEventStage = "Recovery"
+	Recover RecordEventOpration = "Recover"
 )
 
 var log = ctrl.Log.WithName("api")

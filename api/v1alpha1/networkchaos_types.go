@@ -25,6 +25,7 @@ import (
 // +kubebuilder:object:root=true
 // +kubebuilder:printcolumn:name="action",type=string,JSONPath=`.spec.action`
 // +kubebuilder:printcolumn:name="duration",type=string,JSONPath=`.spec.duration`
+// +kubebuilder:subresource:status
 // +chaos-mesh:experiment
 
 // NetworkChaos is the Schema for the networkchaos API

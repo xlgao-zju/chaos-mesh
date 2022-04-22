@@ -619,16 +619,23 @@ spec:
                           items:
                             properties:
                               message:
+                                description: Message is the detail message, e.g. the
+                                  reason why we failed to inject the chaos
                                 type: string
-                              stage:
+                              operation:
+                                description: Operation represents the operation we
+                                  are doing, when we crate this event
                                 type: string
                               timestamp:
+                                description: Timestamp is time when we create this
+                                  event
                                 format: date-time
                                 type: string
                               type:
+                                description: Type means the stage of this event
                                 type: string
                             required:
-                            - stage
+                            - operation
                             - timestamp
                             - type
                             type: object
@@ -669,7 +676,8 @@ spec:
         type: object
     served: true
     storage: true
-    subresources: {}
+    subresources:
+      status: {}
 status:
   acceptedNames:
     kind: ""

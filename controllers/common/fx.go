@@ -25,6 +25,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 
@@ -73,6 +74,11 @@ func Bootstrap(params Params) error {
 		builder := builder.Default(mgr).
 			For(pair.Object).
 			Named(pair.Name + "-pipeline")
+
+		// since we don't want to reconcile the object, when we only change the status of object
+		// os we will reconcile the object, when label/annotation/spec change
+		builder = builder.WithEventFilter(predicate.Or(predicate.LabelChangedPredicate{},
+			predicate.AnnotationChangedPredicate{}, predicate.GenerationChangedPredicate{}))
 
 		// Add owning resources
 		if len(pair.Controlls) > 0 {

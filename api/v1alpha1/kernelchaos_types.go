@@ -21,6 +21,7 @@ import (
 
 // +kubebuilder:object:root=true
 // +kubebuilder:printcolumn:name="duration",type=string,JSONPath=`.spec.duration`
+// +kubebuilder:subresource:status
 // +chaos-mesh:experiment
 
 // KernelChaos is the Schema for the kernelchaos API

@@ -143,7 +143,7 @@ func (info *reconcileInfo) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 			if obj.GetStatus().Experiment.DesiredPhase != desiredPhase {
 				obj.GetStatus().Experiment.DesiredPhase = desiredPhase
 				info.Log.Info("update object", "namespace", obj.GetNamespace(), "name", obj.GetName())
-				return info.Client.Update(context.TODO(), obj)
+				return info.Client.Status().Update(context.TODO(), obj)
 			}
 
 			return nil
