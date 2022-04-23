@@ -24,6 +24,7 @@ import (
 	k8sTypes "k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/event"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
@@ -75,10 +76,10 @@ func Bootstrap(params Params) error {
 			For(pair.Object).
 			Named(pair.Name + "-pipeline")
 
-		// since we don't want to reconcile the object, when we only change the status of object
+		// for common CRDs, since we don't want to reconcile the object, when we only change the status of object
 		// os we will reconcile the object, when label/annotation/spec change
-		builder = builder.WithEventFilter(predicate.Or(predicate.LabelChangedPredicate{},
-			predicate.AnnotationChangedPredicate{}, predicate.GenerationChangedPredicate{}))
+		predicaters := []predicate.Predicate{predicate.LabelChangedPredicate{},
+			predicate.AnnotationChangedPredicate{}, predicate.GenerationChangedPredicate{}}
 
 		// Add owning resources
 		if len(pair.Controlls) > 0 {
@@ -124,6 +125,7 @@ func Bootstrap(params Params) error {
 						return reqs
 					}),
 				)
+				predicaters = append(predicaters, pickChildCRDPredicate(obj))
 			}
 		}
 
@@ -142,6 +144,7 @@ func Bootstrap(params Params) error {
 		})
 
 		pipe.AddSteps(params.Steps...)
+		builder = builder.WithEventFilter(predicate.Or(predicaters...))
 		err := builder.Complete(pipe)
 		if err != nil {
 			return err
@@ -150,4 +153,14 @@ func Bootstrap(params Params) error {
 	}
 
 	return nil
+}
+
+// pick up the events if the object is controlled by common CRDs
+func pickChildCRDPredicate(child client.Object) predicate.Predicate {
+	return predicate.Funcs{
+		UpdateFunc: func(e event.UpdateEvent) bool {
+			return reflect.DeepEqual(e.ObjectNew.GetObjectKind().GroupVersionKind(),
+				child.GetObjectKind().GroupVersionKind())
+		},
+	}
 }

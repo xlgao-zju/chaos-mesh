@@ -3759,6 +3759,8 @@ spec:
     singular: podchaos
   preserveUnknownFields: false
   scope: Namespaced
+  subresources:
+    status: {}
   validation:
     openAPIV3Schema:
       description: PodChaos is the control script`s spec.

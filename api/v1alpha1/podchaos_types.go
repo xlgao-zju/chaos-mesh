@@ -20,6 +20,7 @@ import (
 )
 
 // +kubebuilder:object:root=true
+// +kubebuilder:subresource:status
 // +chaos-mesh:experiment
 // +chaos-mesh:oneshot=in.Spec.Action==PodKillAction || in.Spec.Action==ContainerKillAction
 
