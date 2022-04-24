@@ -125,8 +125,8 @@ func Bootstrap(params Params) error {
 						return reqs
 					}),
 				)
-				predicaters = append(predicaters, pickChildCRDPredicate(obj))
 			}
+			predicaters = append(predicaters, PickChildCRDPredicate{})
 		}
 
 		pipe := pipeline.NewPipeline(&pipeline.PipelineContext{
@@ -155,12 +155,17 @@ func Bootstrap(params Params) error {
 	return nil
 }
 
-// pick up the events if the object is controlled by common CRDs
-func pickChildCRDPredicate(child client.Object) predicate.Predicate {
-	return predicate.Funcs{
-		UpdateFunc: func(e event.UpdateEvent) bool {
-			return reflect.DeepEqual(e.ObjectNew.GetObjectKind().GroupVersionKind(),
-				child.GetObjectKind().GroupVersionKind())
-		},
+// PickChildCRDPredicate pick up the events if the object is controlled by common CRDs
+// for now, we have PodHttpChaos/PodIOChaos/PodNetworkChaos
+type PickChildCRDPredicate struct {
+	predicate.Funcs
+}
+
+// Update implements UpdateEvent filter for child CRD.
+func (PickChildCRDPredicate) Update(e event.UpdateEvent) bool {
+	switch e.ObjectNew.(type) {
+	case *v1alpha1.PodHttpChaos, *v1alpha1.PodIOChaos, *v1alpha1.PodNetworkChaos:
+		return true
 	}
+	return false
 }
