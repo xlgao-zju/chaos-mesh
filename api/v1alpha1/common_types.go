@@ -97,7 +97,7 @@ type RecordEvent struct {
 	// Type means the stage of this event
 	Type RecordEventType `json:"type"`
 	// Operation represents the operation we are doing, when we crate this event
-	Operation RecordEventOpration `json:"operation"`
+	Operation RecordEventOperation `json:"operation"`
 	// Message is the detail message, e.g. the reason why we failed to inject the chaos
 	Message string `json:"message,omitempty"`
 	// Timestamp is time when we create this event
@@ -107,22 +107,33 @@ type RecordEvent struct {
 type RecordEventType string
 
 const (
-	// Succeed means the stage of this event is successful
-	Succeed RecordEventType = "Succeed"
-	// Failed means the stage of this event is failed
-	Failed RecordEventType = "Failed"
+	// TypeSucceeded means the stage of this event is successful
+	TypeSucceeded RecordEventType = "Succeeded"
+	// TypeFailed means the stage of this event is failed
+	TypeFailed RecordEventType = "Failed"
 )
 
-type RecordEventOpration string
+type RecordEventOperation string
 
 const (
 	// Apply means this event is recorded, when we inject the chaos
 	// typically, when we call impl.Apply()
-	Apply RecordEventOpration = "Apply"
+	Apply RecordEventOperation = "Apply"
 	// Recover means this event is recorded, when we recover the chaos
 	// typically, when we call impl.Recover()
-	Recover RecordEventOpration = "Recover"
+	Recover RecordEventOperation = "Recover"
 )
+
+// NewRecordEvent is a constructor of RecordEvent in status
+func NewRecordEvent(eventType RecordEventType, eventStage RecordEventOperation,
+	msg string, time metav1.Time) *RecordEvent {
+	return &RecordEvent{
+		Type:      eventType,
+		Operation: eventStage,
+		Message:   msg,
+		Timestamp: &time,
+	}
+}
 
 var log = ctrl.Log.WithName("api")
 

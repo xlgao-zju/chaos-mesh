@@ -77,9 +77,12 @@ func Bootstrap(params Params) error {
 			Named(pair.Name + "-pipeline")
 
 		// for common CRDs, since we don't want to reconcile the object, when we only change the status of object
-		// os we will reconcile the object, when label/annotation/spec change
-		predicaters := []predicate.Predicate{predicate.LabelChangedPredicate{},
-			predicate.AnnotationChangedPredicate{}, predicate.GenerationChangedPredicate{}}
+		// os we will reconcile the object, when label/annotation/spec/deletionTimestamp change
+		predicaters := []predicate.Predicate{
+			predicate.LabelChangedPredicate{},
+			predicate.AnnotationChangedPredicate{},
+			predicate.GenerationChangedPredicate{},
+			DeletionTimestampUpdatePredicate{}}
 
 		// Add owning resources
 		if len(pair.Controlls) > 0 {
@@ -155,8 +158,10 @@ func Bootstrap(params Params) error {
 	return nil
 }
 
-// PickChildCRDPredicate pick up the events if the object is controlled by common CRDs
-// for now, we have PodHttpChaos/PodIOChaos/PodNetworkChaos
+// PickChildCRDPredicate allows events to trigger the Reconcile of Chaos CRD,
+// for example:
+// Reconcile of IOChaos could be triggered by changes on PodIOChaos.
+// For now, we have PodHttpChaos/PodIOChaos/PodNetworkChaos which require to follow this pattern.
 type PickChildCRDPredicate struct {
 	predicate.Funcs
 }
@@ -168,4 +173,14 @@ func (PickChildCRDPredicate) Update(e event.UpdateEvent) bool {
 		return true
 	}
 	return false
+}
+
+// DeletionTimestampUpdatePredicate pick up the update event when we update deletionTimestamp
+type DeletionTimestampUpdatePredicate struct {
+	predicate.Funcs
+}
+
+// Update implements UpdateEvent filter for update deletionTimestamp.
+func (DeletionTimestampUpdatePredicate) Update(e event.UpdateEvent) bool {
+	return e.ObjectNew.GetDeletionTimestamp() != e.ObjectOld.GetDeletionTimestamp()
 }
