@@ -92,8 +92,7 @@ type Experiment struct {
 // Detail adds KubeObjectDesc on Experiment.
 type Detail struct {
 	Experiment
-	KubeObject core.KubeObjectDesc  `json:"kube_object"`
-	KubeStatus v1alpha1.ChaosStatus `json:"kube_status"`
+	KubeObject core.KubeObjectDesc `json:"kube_object"`
 }
 
 // @Summary List chaos experiments.
@@ -276,7 +275,7 @@ func (s *Service) findChaosInCluster(c *gin.Context, kubeCli client.Client, name
 	}
 
 	kind := gvk.Kind
-	statefulChaos := chaos.(v1alpha1.StatefulObject)
+
 	return &Detail{
 		Experiment: Experiment{
 			ObjectBase: core.ObjectBase{
@@ -301,7 +300,6 @@ func (s *Service) findChaosInCluster(c *gin.Context, kubeCli client.Client, name
 			},
 			Spec: reflect.ValueOf(chaos).Elem().FieldByName("Spec").Interface(),
 		},
-		KubeStatus: *statefulChaos.GetStatus(),
 	}
 }
 
