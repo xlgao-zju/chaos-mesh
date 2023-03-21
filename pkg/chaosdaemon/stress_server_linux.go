@@ -218,7 +218,7 @@ func (s *DaemonServer) ExecMemoryStressors(ctx context.Context,
 	}
 
 	args := strings.Fields(req.MemoryStressors)
-	args = append(args, []string{"--pid", fmt.Sprintf("%s", pid)}...)
+	args = append(args, []string{"--pid", fmt.Sprintf("%d", pid)}...)
 	processBuilder := bpm.DefaultProcessBuilder("memStress", args...).
 		EnablePause()
 
