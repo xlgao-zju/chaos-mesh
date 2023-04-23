@@ -17,6 +17,7 @@ package chaosdaemon
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"strings"
 	"syscall"
@@ -29,7 +30,7 @@ import (
 
 	"github.com/chaos-mesh/chaos-mesh/pkg/bpm"
 	daemonCgroups "github.com/chaos-mesh/chaos-mesh/pkg/chaosdaemon/cgroups"
-	pb "github.com/chaos-mesh/chaos-mesh/pkg/chaosdaemon/pb"
+	"github.com/chaos-mesh/chaos-mesh/pkg/chaosdaemon/pb"
 	"github.com/chaos-mesh/chaos-mesh/pkg/chaosdaemon/util"
 )
 
@@ -263,6 +264,13 @@ func (s *DaemonServer) ExecMemoryStressors(ctx context.Context,
 			break
 		}
 		log.Info("the process hasn't resumed, step into the following loop", "comm", comm)
+	}
+
+	// sleep 1 second to wait for memStress get started
+	time.Sleep(time.Second)
+	if _, err = util.ReadCommName(proc.Pair.Pid); err != nil {
+		log.Error(err, "failed to start memStress", "request", req)
+		return nil, fmt.Errorf("failed to start memStress")
 	}
 
 	return proc, nil
